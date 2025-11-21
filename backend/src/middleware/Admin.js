@@ -1,12 +1,15 @@
-// src/middleware/Admin.js
 /**
- * Checks req.user (populated by requireAuth) and ensures role === 'admin'
+ * Checks req.auth (populated by Clerk middleware) and ensures role === 'admin'
  */
 export default function isAdmin(req, res, next) {
   try {
-    const user = req.user;
-    if (!user) return res.status(401).json({ message: "Unauthorized" });
-    if (user.role !== "admin") return res.status(403).json({ message: "Forbidden - admin only" });
+    const auth = req.auth;
+    if (!auth?.userId) return res.status(401).json({ message: "Unauthorized" });
+    
+    // Get admin role from Clerk metadata
+    const userRole = auth.sessionClaims?.metadata?.role;
+    if (userRole !== "admin") return res.status(403).json({ message: "Forbidden - admin only" });
+    
     return next();
   } catch (err) {
     console.error("Admin check error:", err);

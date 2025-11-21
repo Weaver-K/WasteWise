@@ -1,27 +1,23 @@
 // src/middleware/Auth.js
-import { ClerkExpressWithAuth } from "@clerk/clerk-sdk-node";
+import { clerkMiddleware, requireAuth as clerkRequireAuth, getAuth } from "@clerk/express";
 import { syncUser } from "../utils/syncUser.js";
 
-// Initializes Clerk authentication using ONLY the server secret key
-export const clerkAuthMiddleware = ClerkExpressWithAuth({
-  secretKey: process.env.CLERK_SECRET_KEY,
-});
+// Apply Clerk middleware to all requests
+export const clerk = clerkMiddleware();
 
-// Protects routes and loads synced user
-export async function requireAuth(req, res, next) {
+// Wrap requireAuth as a named export
+export const requireAuth = clerkRequireAuth(); // now you can import { requireAuth }
+
+// Middleware to attach MongoDB user
+export const attachUser = async (req, res, next) => {
   try {
-    if (!req.auth || !req.auth.userId) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
+    const { userId } = getAuth(req); // get userId from Clerk session
+    if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
-    const clerkId = req.auth.userId;
-
-    const user = await syncUser({ clerkId });
-
-    req.user = user;
+    req.user = await syncUser({ clerkId: userId });
     next();
   } catch (err) {
-    console.error("requireAuth error:", err);
+    console.error("attachUser error:", err);
     return res.status(500).json({ message: "Server error" });
   }
-}
+};

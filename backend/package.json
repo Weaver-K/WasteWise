@@ -13,9 +13,8 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "@clerk/backend": "^2.23.0",
-    "@clerk/clerk-sdk-node": "^5.1.6",
-    "@clerk/express": "^1.7.50",
+    "@clerk/express": "^1.7.51",
+    "axios": "^1.13.2",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",

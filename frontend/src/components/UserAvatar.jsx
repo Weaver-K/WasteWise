@@ -1,28 +1,40 @@
-import React, { useEffect, useState } from "react";
-import { useUser } from "@clerk/clerk-react";
-import api from "../lib/api"; // small axios instance
-import { Avatar, AvatarImage, AvatarFallback } from "../components/ui/avatar.jsx";
+// src/components/UserAvatar.jsx
+import React from "react";
 
+/**
+ * UserAvatar: safe avatar component that avoids src=""
+ * Props:
+ * - src (string) avatar url
+ * - name (string) fallback initials
+ * - size (number) px
+ */
+export default function UserAvatar({ src, name, size = 32 }) {
+  // ensure src is either a valid string or null (not empty string)
+  const safeSrc = src && src.length ? src : null;
 
-export default function UserAvatar({ size = 40 }) {
-  const { isSignedIn, user } = useUser();
-  const [backendAvatar, setBackendAvatar] = useState(null);
+  const initials = (name || "")
+    .split(" ")
+    .map((s) => s[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
 
-  useEffect(() => {
-    if (!isSignedIn) return;
-    // try to fetch user's profile from backend (optional endpoint /users/me)
-    (async () => {
-      try {
-        const res = await api.get("/users/me");
-        setBackendAvatar(res.data?.avatarUrl || null);
-      } catch {
-        setBackendAvatar(null);
-      }
-    })();
-  }, [isSignedIn]);
-
-  const imageUrl = user?.imageUrl || backendAvatar || "";
-  const name = user?.fullName || user?.firstName || "User";
-
-  return <Avatar src={imageUrl} name={name} size={size} />;
+  return safeSrc ? (
+    <img
+      src={safeSrc}
+      alt={name || "Avatar"}
+      width={size}
+      height={size}
+      className="rounded-full object-cover"
+      style={{ width: size, height: size }}
+    />
+  ) : (
+    <div
+      className="rounded-full bg-gray-200 text-gray-700 flex items-center justify-center font-medium"
+      style={{ width: size, height: size }}
+      aria-hidden
+    >
+      {initials || "U"}
+    </div>
+  );
 }

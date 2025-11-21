@@ -12,21 +12,21 @@ import {
   getReportBySlug,
 } from "../controllers/reportController.js";
 
-import { requireAuth } from "../middleware/Auth.js";
+import { requireAuth, attachUser } from "../middleware/Auth.js";
 
 // slug first
 router.get("/slug/:slug", getReportBySlug);
 
-// list + get
+// public routes
 router.get("/", getReports);
 router.get("/:id", getReport);
 
-// protected
-router.post("/", requireAuth, createReport);
-router.put("/:id", requireAuth, updateReport);
-router.delete("/:id", requireAuth, deleteReport);
+// protected routes: attachUser ensures req.user exists
+router.post("/", requireAuth, attachUser, createReport);
+router.put("/:id", requireAuth, attachUser, updateReport);
+router.delete("/:id", requireAuth, attachUser, deleteReport);
 
 // comments
-router.post("/:id/comment", requireAuth, addComment);
+router.post("/:id/comment", requireAuth, attachUser, addComment);
 
 export default router;

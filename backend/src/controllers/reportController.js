@@ -7,7 +7,7 @@ export async function createReport(req, res) {
   try {
     const { title, body, location, imageUrl } = req.body;
 
-    // req.user is the mongoose User doc from requireAuth
+    // req.user populated by attachUser middleware
     const createdBy = req.user?._id ?? null;
 
     const report = new Report({
@@ -28,7 +28,7 @@ export async function createReport(req, res) {
   }
 }
 
-/* Get all reports */
+/* Get all reports (public route) */
 export async function getReports(req, res) {
   try {
     const reports = await Report.find()
@@ -42,7 +42,7 @@ export async function getReports(req, res) {
   }
 }
 
-/* Get by id */
+/* Get report by id */
 export async function getReport(req, res) {
   try {
     const { id } = req.params;
@@ -58,7 +58,7 @@ export async function getReport(req, res) {
   }
 }
 
-/* Get by slug */
+/* Get report by slug */
 export async function getReportBySlug(req, res) {
   try {
     const { slug } = req.params;
@@ -74,14 +74,16 @@ export async function getReportBySlug(req, res) {
   }
 }
 
-/* Update */
+/* Update report */
 export async function updateReport(req, res) {
   try {
     const { id } = req.params;
     const updates = req.body;
+
     const report = await Report.findByIdAndUpdate(id, updates, { new: true })
       .populate("createdBy", "name email avatarUrl")
       .populate("comments.user", "name email avatarUrl");
+
     if (!report) return res.status(404).json({ message: "Report not found" });
     return res.json(report);
   } catch (err) {
@@ -90,7 +92,7 @@ export async function updateReport(req, res) {
   }
 }
 
-/* Delete */
+/* Delete report */
 export async function deleteReport(req, res) {
   try {
     const { id } = req.params;
@@ -103,12 +105,15 @@ export async function deleteReport(req, res) {
   }
 }
 
-/* Add a comment to a report (req.user required) */
+/* Add a comment (req.user required) */
 export async function addComment(req, res) {
   try {
-    const { id } = req.params; // report id
+    const { id } = req.params;
     const { text } = req.body;
+
+    // req.user populated by attachUser middleware
     const userRef = req.user?._id;
+    if (!userRef) return res.status(401).json({ message: "Unauthorized" });
 
     const report = await Report.findById(id);
     if (!report) return res.status(404).json({ message: "Report not found" });

@@ -1,20 +1,18 @@
+// src/components/app-sidebar.jsx
 import * as React from "react";
 import {
-  IconCamera,
-  IconChartBar,
-  IconDashboard,
-  IconDatabase,
-  IconFileAi,
-  IconFileDescription,
-  IconFileWord,
-  IconFolder,
-  IconHelp,
   IconInnerShadowTop,
   IconListDetails,
-  IconReport,
-  IconSearch,
-  IconSettings,
+  IconChartBar,
+  IconFolder,
   IconUsers,
+  IconDatabase,
+  IconReport,
+  IconFileWord,
+  IconSettings,
+  IconHelp,
+  IconSearch,
+  IconDashboard,
 } from "@tabler/icons-react";
 
 import { NavDocuments } from "./nav-documents.jsx";
@@ -45,21 +43,21 @@ export function AppSidebar(props) {
       avatar: "/avatars/shadcn.jpg",
     },
     navMain: [
-      { title: "Dashboard", url: "#", icon: IconDashboard },
-      { title: "Lifecycle", url: "#", icon: IconListDetails },
-      { title: "Analytics", url: "#", icon: IconChartBar },
-      { title: "Projects", url: "#", icon: IconFolder },
-      { title: "Team", url: "#", icon: IconUsers },
+      { title: "Dashboard", url: "/", icon: IconDashboard },
+      { title: "Lifecycle", url: "/lifecycle", icon: IconListDetails },
+      { title: "Analytics", url: "/analytics", icon: IconChartBar },
+      { title: "Projects", url: "/projects", icon: IconFolder },
+      { title: "Team", url: "/team", icon: IconUsers },
     ],
     documents: [
-      { name: "Data Library", url: "#", icon: IconDatabase },
-      { name: "Reports", url: "#", icon: IconReport },
-      { name: "Word Assistant", url: "#", icon: IconFileWord },
+      { name: "Data Library", url: "/data", icon: IconDatabase },
+      { name: "Reports", url: "/reports", icon: IconReport },
+      { name: "Word Assistant", url: "/word", icon: IconFileWord },
     ],
     navSecondary: [
-      { title: "Settings", url: "#", icon: IconSettings },
-      { title: "Get Help", url: "#", icon: IconHelp },
-      { title: "Search", url: "#", icon: IconSearch },
+      { title: "Settings", url: "/settings", icon: IconSettings },
+      { title: "Get Help", url: "/help", icon: IconHelp },
+      { title: "Search", url: "/search", icon: IconSearch },
     ],
   };
 
@@ -69,7 +67,7 @@ export function AppSidebar(props) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild className="p-1.5">
-              <a href="#">
+              <a href="/" className="flex items-center gap-2">
                 <IconInnerShadowTop className="size-5" />
                 <span className="font-semibold text-base">Waste Wise.</span>
               </a>
@@ -86,7 +84,10 @@ export function AppSidebar(props) {
 
       <SidebarFooter>
         <NavUser user={data.user} />
-        {isMobile && <SidebarTrigger />}
+        {/* Show toggle for mobile only */}
+        <div className="md:hidden">
+          <SidebarTrigger />
+        </div>
       </SidebarFooter>
     </Sidebar>
   );

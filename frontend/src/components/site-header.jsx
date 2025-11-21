@@ -1,3 +1,4 @@
+// src/components/site-header.jsx
 import React from "react";
 import { useIsMobile } from "../blocks/use-mobile.js";
 import { SidebarTrigger } from "./ui/sidebar.jsx";
@@ -9,10 +10,12 @@ export function SiteHeader() {
   const isMobile = useIsMobile();
 
   return (
-    <header className="flex items-center gap-3 border-b px-4 py-3">
+    <header className="flex items-center gap-3 border-b px-4 py-3 bg-background/80 backdrop-blur-sm z-20">
       <div className="flex items-center gap-3">
         {/* Sidebar toggle on mobile */}
-        <SidebarTrigger className="sm:hidden" />
+        <div className="md:hidden">
+          <SidebarTrigger />
+        </div>
 
         <h1 className="text-lg font-semibold">WasteWise</h1>
       </div>

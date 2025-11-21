@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-dom";
+import { useParams } from "react-router-dom";
 import api from "../lib/api.js";
 import { Input } from "../components/ui/input.jsx";
 
