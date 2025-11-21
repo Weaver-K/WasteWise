@@ -223,16 +223,15 @@ export default function DataTable({ data: initialData }) {
 
   const dataIds = React.useMemo(() => data.map(({ id }) => id), [data]);
 
-  const table = useReactTable({
-    data,
-    columns: [], // For brevity, add your columns as before
-    state: { rowSelection },
-    getRowId: (row) => row.id.toString(),
-    enableRowSelection: true,
-    onRowSelectionChange: setRowSelection,
-    getCoreRowModel: getCoreRowModel(),
-  });
-
+const table = useReactTable({
+  data,
+  columns: [], // For brevity, add your columns as before
+  state: { rowSelection },
+  getRowId: (row) => row._id.toString(), // Changed to row._id
+  enableRowSelection: true,
+  onRowSelectionChange: setRowSelection,
+  getCoreRowModel: getCoreRowModel(),
+});
   const handleDragEnd = ({ active, over }) => {
     if (active && over && active.id !== over.id) {
       setData((d) => {

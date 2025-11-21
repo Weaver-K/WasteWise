@@ -1,37 +1,38 @@
 // src/components/site-header.jsx
 import React from "react";
-import { useIsMobile } from "../blocks/use-mobile.js";
-import { SidebarTrigger } from "./ui/sidebar.jsx";
+import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
+import UserAvatar from "./UserAvatar.jsx";
 import { Button } from "./ui/button.jsx";
 import { Separator } from "./ui/separator.jsx";
-import UserAvatar from "./UserAvatar.jsx";
+import { SidebarTrigger } from "./ui/sidebar.jsx";
 
-export function SiteHeader() {
-  const isMobile = useIsMobile();
-
+function SiteHeader() {
   return (
-    <header className="flex items-center gap-3 border-b px-4 py-3 bg-background/80 backdrop-blur-sm z-20">
-      <div className="flex items-center gap-3">
-        {/* Sidebar toggle on mobile */}
-        <div className="md:hidden">
-          <SidebarTrigger />
-        </div>
+    <header className="border-b bg-background sticky top-0 z-40">
+      <div className="flex items-center gap-4 px-4 h-14">
+        <SidebarTrigger />
 
         <h1 className="text-lg font-semibold">WasteWise</h1>
-      </div>
 
-      <div className="ml-auto flex items-center gap-3">
-        <div className="hidden sm:block">
-          <Button variant="ghost" size="sm">
-            <a href="https://ui.shadcn.com/blocks" target="_blank" rel="noreferrer">Blocks</a>
-          </Button>
+        <div className="ml-auto flex items-center gap-3">
+          <SignedIn>
+            <div className="hidden sm:flex items-center gap-2">
+              <UserAvatar size={36} />
+            </div>
+            <UserButton />
+          </SignedIn>
+
+          <SignedOut>
+            <Button asChild>
+              <a href="/login">Login</a>
+            </Button>
+          </SignedOut>
+
+          <Separator orientation="vertical" className="h-6 hidden sm:block" />
         </div>
-
-        <Separator orientation="vertical" className="hidden sm:block h-6" />
-
-        {/* avatar */}
-        <UserAvatar size={36} />
       </div>
     </header>
   );
 }
+
+export default SiteHeader;

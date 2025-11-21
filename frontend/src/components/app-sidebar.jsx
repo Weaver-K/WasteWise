@@ -1,7 +1,7 @@
 // src/components/app-sidebar.jsx
 import * as React from "react";
 import {
-  IconInnerShadowTop,
+  IconDashboard,
   IconListDetails,
   IconChartBar,
   IconFolder,
@@ -12,7 +12,7 @@ import {
   IconSettings,
   IconHelp,
   IconSearch,
-  IconDashboard,
+  IconInnerShadowTop,
 } from "@tabler/icons-react";
 
 import { NavDocuments } from "./nav-documents.jsx";
@@ -38,25 +38,22 @@ export function AppSidebar(props) {
 
   const data = {
     user: {
-      name: "shadcn",
-      email: "m@example.com",
+      name: "Shadcn User",
+      email: "demo@example.com",
       avatar: "/avatars/shadcn.jpg",
     },
     navMain: [
       { title: "Dashboard", url: "/", icon: IconDashboard },
-      { title: "Lifecycle", url: "/lifecycle", icon: IconListDetails },
+      { title: "Reports", url: "/reports", icon: IconReport },
       { title: "Analytics", url: "/analytics", icon: IconChartBar },
-      { title: "Projects", url: "/projects", icon: IconFolder },
-      { title: "Team", url: "/team", icon: IconUsers },
     ],
     documents: [
       { name: "Data Library", url: "/data", icon: IconDatabase },
-      { name: "Reports", url: "/reports", icon: IconReport },
       { name: "Word Assistant", url: "/word", icon: IconFileWord },
     ],
     navSecondary: [
       { title: "Settings", url: "/settings", icon: IconSettings },
-      { title: "Get Help", url: "/help", icon: IconHelp },
+      { title: "Help", url: "/help", icon: IconHelp },
       { title: "Search", url: "/search", icon: IconSearch },
     ],
   };
@@ -66,10 +63,10 @@ export function AppSidebar(props) {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild className="p-1.5">
+            <SidebarMenuButton asChild className="p-2">
               <a href="/" className="flex items-center gap-2">
                 <IconInnerShadowTop className="size-5" />
-                <span className="font-semibold text-base">Waste Wise.</span>
+                <span className="font-semibold">WasteWise</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -79,12 +76,11 @@ export function AppSidebar(props) {
       <SidebarContent>
         <NavMain items={data.navMain} />
         <NavDocuments items={data.documents} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        <NavSecondary items={data.navSecondary} />
       </SidebarContent>
 
       <SidebarFooter>
         <NavUser user={data.user} />
-        {/* Show toggle for mobile only */}
         <div className="md:hidden">
           <SidebarTrigger />
         </div>
@@ -92,3 +88,5 @@ export function AppSidebar(props) {
     </Sidebar>
   );
 }
+
+export default AppSidebar;

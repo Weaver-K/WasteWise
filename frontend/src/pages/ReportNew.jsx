@@ -1,6 +1,8 @@
+// src/pages/ReportNew.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../lib/api.js";
+import { useAuth } from "@clerk/clerk-react";
+import { authRequest } from "../lib/api.js";
 import { Input } from "../components/ui/input.jsx";
 import { Textarea } from "../components/ui/textarea.jsx";
 
@@ -8,12 +10,14 @@ export default function ReportNew() {
   const [form, setForm] = useState({ title: "", body: "", location: "", imageUrl: "" });
   const [submitting, setSubmitting] = useState(false);
   const nav = useNavigate();
+  const { getToken } = useAuth();
 
   const submit = async (e) => {
     e.preventDefault();
     try {
       setSubmitting(true);
-      await api.post("/reports", form);
+      const token = await getToken();
+      await authRequest({ method: "post", url: "/reports", data: form }, token);
       nav("/reports");
     } catch (err) {
       console.error(err);
@@ -29,6 +33,7 @@ export default function ReportNew() {
 
       <Input placeholder="Title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
       <Textarea placeholder="Description" value={form.body} onChange={(e) => setForm({ ...form, body: e.target.value })} />
+
       <Input placeholder="Location (optional)" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} />
       <Input placeholder="Image URL (optional)" value={form.imageUrl} onChange={(e) => setForm({ ...form, imageUrl: e.target.value })} />
 
@@ -36,6 +41,7 @@ export default function ReportNew() {
         <button type="submit" className="px-4 py-2 rounded-md bg-green-600 text-white" disabled={submitting}>
           {submitting ? "Submitting..." : "Submit"}
         </button>
+
         <button type="button" onClick={() => setForm({ title: "", body: "", location: "", imageUrl: "" })} className="px-4 py-2 rounded-md border">
           Reset
         </button>

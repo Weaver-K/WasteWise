@@ -1,40 +1,39 @@
 // src/components/UserAvatar.jsx
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useUser, useAuth } from "@clerk/clerk-react";
+import { authRequest } from "../lib/api.js";
+import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar.jsx";
 
-/**
- * UserAvatar: safe avatar component that avoids src=""
- * Props:
- * - src (string) avatar url
- * - name (string) fallback initials
- * - size (number) px
- */
-export default function UserAvatar({ src, name, size = 32 }) {
-  // ensure src is either a valid string or null (not empty string)
-  const safeSrc = src && src.length ? src : null;
+export default function UserAvatar({ size = 36 }) {
+  const { user, isSignedIn } = useUser();
+  const { getToken } = useAuth();
+  const [backendAvatar, setBackendAvatar] = useState(null);
 
-  const initials = (name || "")
-    .split(" ")
-    .map((s) => s[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
+  useEffect(() => {
+    let mounted = true;
+    if (!isSignedIn) {
+      setBackendAvatar(null);
+      return;
+    }
+    (async () => {
+      try {
+        const token = await getToken();
+        const res = await authRequest({ method: "get", url: "/users/me" }, token);
+        if (!mounted) return;
+        setBackendAvatar(res.data?.avatarUrl || null);
+      } catch (err) {
+        setBackendAvatar(null);
+      }
+    })();
+    return () => (mounted = false);
+  }, [isSignedIn, getToken]);
 
-  return safeSrc ? (
-    <img
-      src={safeSrc}
-      alt={name || "Avatar"}
-      width={size}
-      height={size}
-      className="rounded-full object-cover"
-      style={{ width: size, height: size }}
-    />
-  ) : (
-    <div
-      className="rounded-full bg-gray-200 text-gray-700 flex items-center justify-center font-medium"
-      style={{ width: size, height: size }}
-      aria-hidden
-    >
-      {initials || "U"}
-    </div>
+  const imageUrl = user?.imageUrl || backendAvatar || "";
+  const name = user?.fullName || user?.firstName || "User";
+
+  return (
+    <Avatar style={{ width: size, height: size }}>
+      {imageUrl ? <AvatarImage src={imageUrl} alt={name} /> : <AvatarFallback>{name?.[0]}</AvatarFallback>}
+    </Avatar>
   );
 }

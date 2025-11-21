@@ -1,6 +1,8 @@
+// src/pages/ReportView.jsx
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import api from "../lib/api.js";
+import { useAuth } from "@clerk/clerk-react";
+import api, { authRequest } from "../lib/api.js";
 import { Input } from "../components/ui/input.jsx";
 
 export default function ReportView() {
@@ -8,6 +10,7 @@ export default function ReportView() {
   const [report, setReport] = useState(null);
   const [comment, setComment] = useState("");
   const [posting, setPosting] = useState(false);
+  const { getToken } = useAuth();
 
   useEffect(() => {
     let mounted = true;
@@ -24,14 +27,13 @@ export default function ReportView() {
     return () => (mounted = false);
   }, [id]);
 
-  if (!report) return <div className="p-6">Loading...</div>;
-
   const postComment = async () => {
     if (!comment.trim()) return;
     try {
       setPosting(true);
-      const { data } = await api.post(`/reports/${id}/comment`, { text: comment });
-      setReport(data);
+      const token = await getToken();
+      const res = await authRequest({ method: "post", url: `/reports/${id}/comment`, data: { text: comment } }, token);
+      setReport(res.data);
       setComment("");
     } catch (err) {
       console.error(err);
@@ -41,9 +43,11 @@ export default function ReportView() {
     }
   };
 
+  if (!report) return <div className="p-6">Loading...</div>;
+
   return (
-    <div className="max-w-2xl mx-auto">
-      <h1 className="text-2xl font-semibold">{report.title}</h1>
+    <div className="max-w-3xl mx-auto space-y-6">
+      <h1 className="text-3xl font-bold">{report.title}</h1>
       <p className="text-sm text-muted">{report.createdBy?.name} • {new Date(report.createdAt).toLocaleString()}</p>
 
       <div className="mt-4">{report.body}</div>
